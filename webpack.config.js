@@ -1,38 +1,56 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { VueLoaderPlugin } = require('vue-loader');
+
 module.exports = {
-    mode: "development",
+    mode: 'development',
     entry: './src/index.ts',
-    devServer: {
-        static: './dist',
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'bundle.js'
     },
-    plugins: [
-        new HtmlWebpackPlugin({
-            title: '管理输出',
-        }),
-    ],
-    devtool: 'inline-source-map',
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/,
+                test: /\.vue$/,
+                loader: 'vue-loader'
             },
-        ],
+            {
+                test: /\.ts$/,
+                loader: 'ts-loader',
+                options: {
+                    appendTsSuffixTo: [/\.vue$/]
+                }
+            },
+            {
+                test: /\.less$/,
+                use: [
+                    'vue-style-loader',
+                    'css-loader',
+                    'less-loader'
+                ]
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'vue-style-loader',
+                    'css-loader'
+                ]
+            }
+        ]
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.ts', '.js', '.vue', '.json'],
+        alias: {
+            '@': path.resolve(__dirname, 'src')
+        }
     },
-    output: {
-        // filename: 'bundle.js',
-        filename: '[name].[contenthash].js',
-        path: path.resolve(__dirname, 'dist'),
-        clean: true,
-        publicPath: '/',
-    },
-    optimization: {
-        runtimeChunk: 'single',
-    },
-
-}
+    plugins: [
+        new VueLoaderPlugin() // 必须添加这个插件！
+    ],
+    devServer: {
+        static: './dist', // 指定静态资源目录
+        compress: true,   // 启用gzip压缩
+        port: 8080,       // 指定端口
+        open: true        // 启动时自动打开浏览器
+    }
+};

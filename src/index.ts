@@ -1,11 +1,4 @@
-import * as _ from "lodash";
+import { createApp } from "vue";
+import App from "./app.vue";
 
-function component() {
-  const element = document.createElement("div");
-
-  element.innerHTML = _.join(["Hello", "webpack"], " ");
-
-  return element;
-}
-
-document.body.appendChild(component());
+createApp(App).mount("#app");
